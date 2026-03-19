@@ -26,6 +26,37 @@ load_dotenv()
 st.set_page_config(page_title="Stock Wizz", page_icon="", layout="wide")
 
 # =============================================================================
+# PASSWORD PROTECTION
+# =============================================================================
+def check_password():
+    """Simple password gate using Streamlit secrets."""
+    if "authenticated" not in st.session_state:
+        st.session_state.authenticated = False
+    
+    if st.session_state.authenticated:
+        return True
+    
+    st.title("Stock Wizz")
+    st.markdown("Enter password to access dashboard.")
+    password = st.text_input("Password", type="password")
+    
+    if password:
+        try:
+            correct = st.secrets["PASSWORD"]
+        except:
+            correct = os.getenv("PASSWORD", "stockwizz")
+        
+        if password == correct:
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("Wrong password.")
+    return False
+
+if not check_password():
+    st.stop()
+
+# =============================================================================
 # SUPABASE CONNECTION
 # =============================================================================
 @st.cache_resource
