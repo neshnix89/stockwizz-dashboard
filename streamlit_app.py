@@ -65,6 +65,17 @@ def get_supabase():
 
 supabase = get_supabase()
 
+# Debug connection
+if supabase:
+    st.sidebar.success("DB Connected")
+    try:
+        test = supabase.table('signals').select('id').limit(1).execute()
+        st.sidebar.info(f"Signals rows: {len(test.data)}")
+    except Exception as e:
+        st.sidebar.error(f"Query error: {e}")
+else:
+    st.sidebar.error("DB Not Connected")
+
 def fetch_table(table_name, order_by=None, limit=2000):
     if not supabase:
         return pd.DataFrame()
