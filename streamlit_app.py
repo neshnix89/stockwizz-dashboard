@@ -106,6 +106,19 @@ SIGNAL_COLORS = {
     'S20_SympathyDip': '#85C1E9',
 }
 
+SIGNAL_DESCRIPTIONS = {
+    'S4_InsiderClusters': 'Company insiders (CEO, CFO, directors) buying stock with their own money. 2+ insiders buying within 14 days = they know something good is coming.',
+    'S5_VolPriceDivergence': 'Trading volume rising 1.5x+ while stock price stays flat. Someone is quietly accumulating shares before a move. Blocked in bear markets.',
+    'S6_NeglectedFirm': 'Stocks with 2 or fewer analysts covering them. Less coverage = less efficient pricing = more opportunity. Blocked in bear markets.',
+    'S7_CongressCluster': '2+ US politicians buying the same stock within 14 days. Politicians have access to non-public policy information that affects stock prices.',
+    'S8_Activist13D': 'An activist investor files SEC 13D (5%+ ownership stake). They plan to push for changes that unlock value. Quick 5-day trade on the announcement pop.',
+    'S9_8KSevereDip': 'Company files an 8-K (material event) AND stock drops >10%. Market overreacts to bad news — mean reversion trade.',
+    'S12_GovContracts': 'Company wins a government contract >$10M. Government contracts = guaranteed revenue with zero credit risk. Stock drifts higher for weeks.',
+    'S13_UnusualOptions': 'Stock volume spikes 2x+ above normal with a positive close. Smart money is positioning before a move.',
+    'S18_ShortCovering': 'Stock down 15%+ from high, then suddenly volume spikes 2x with a green candle. Short sellers are covering = forced buying = reversal.',
+    'S20_SympathyDip': 'One stock in a sector crashes >10%, peers drop 3-8% in sympathy even though the bad news doesnt affect them. Buy the innocent bystanders.',
+}
+
 BACKTEST = {
     'S4_InsiderClusters':    {'pf': 3.32, 'hit': 59.3, 'exp': 9.90, 'hold': 40, 'trades': 27},
     'S5_VolPriceDivergence': {'pf': 1.71, 'hit': 53.5, 'exp': 1.98, 'hold': 10, 'trades': 318},
@@ -299,6 +312,11 @@ elif page == "FT Signal Scorecard":
     st.title("📊 Signal Scorecard — Live vs Backtest")
     st.markdown("*Side-by-side comparison of every signal's forward test results against backtest.*")
 
+    with st.expander("📖 What does each signal mean?"):
+        for sig, desc in SIGNAL_DESCRIPTIONS.items():
+            color = SIGNAL_COLORS.get(sig, '#888')
+            st.markdown(f"**{sig}** — {desc}")
+    
     trades_df = fetch_table('trades', 'closed_at')
 
     # Build scorecard
@@ -405,6 +423,7 @@ elif page == "FT Signal Deep Dive":
     positions_df = fetch_table('positions')
 
     signal_choice = st.selectbox("Select Signal", sorted(BACKTEST.keys()))
+    st.info(SIGNAL_DESCRIPTIONS.get(signal_choice, ''))
     bt = BACKTEST[signal_choice]
     color = SIGNAL_COLORS.get(signal_choice, '#888')
 
